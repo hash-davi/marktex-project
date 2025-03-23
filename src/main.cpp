@@ -1,20 +1,15 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <cctype>
-#include <limits>
-#include <ios>
-#include <vector>
+#include "./headers/Marktex_main.h"
 
-using std::string;
-using std::fstream;
+#include "editorEnvironment.cpp"
 
 void mainScreen();
+/*
 void readLine(string filename, fstream &txtFile);
 void writeLine(string filename, fstream &txtFile);
 int getTextLength(string filename, fstream &txtFile);
 std::vector<string> getTextLines(string filename, fstream &txtFile);
 string getText(string filename, fstream &txtFile);
+*/
 void leaveProgram();
 
 constexpr int maxBuffer = 100;
@@ -58,19 +53,17 @@ void mainScreen() {
         }
     }
 
-    std::cout << "Type [r] if you wish to read the file, [w] to write in it or [l] if you wish to leave: ";
+    std::cout << "Type [y] if you wish to edit the file or [n] if you want to leave: ";
     std::cin >> choice;
 
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     switch(tolower(choice)) {
-        case 'r':
-            readLine(filename, testFile);
+        case 'y':
+            system("cls");
+            editor(filename, testFile);
             break;
-        case 'w':
-            writeLine("..\\files\\test.txt", testFile);
-            break;
-        case 'l':
+        case 'n':
             leaveProgram();
             break;
         default:
@@ -80,6 +73,8 @@ void mainScreen() {
     }
 }
 
+
+/*
 void readLine(string filename, fstream &txtFile) {
     txtFile.open(filename, std::ios_base::in);
 
@@ -121,12 +116,12 @@ void writeLine(string filename, fstream &txtFile) {
             std::cout << textLines[i] << '\n';
         }
 
-        /*
+
         getline(std::cin, textInput);
         fileText += textInput;
         keyCounter += textInput.length();
         txtFile << textInput;
-        */
+
 
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -177,6 +172,7 @@ string getText(string filename, fstream &txtFile) {
 
     return wholeText;
 }
+*/
 
 void leaveProgram() {
     std::cout << "Thank you for using our app!" << std::endl;
