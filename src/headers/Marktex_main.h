@@ -1,6 +1,10 @@
 #ifndef MARKTEX_MAIN_H_INCLUDED
 #define MARKTEX_MAIN_H_INCLUDED
 
+#ifndef UNICODE
+#define UNICODE
+#endif // UNICODE
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -8,6 +12,7 @@
 #include <limits>
 #include <ios>
 #include <vector>
+#include <windows.h>
 
 using std::string;
 using std::fstream;

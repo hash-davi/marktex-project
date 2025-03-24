@@ -36,6 +36,8 @@ void showText(string filename, fstream &txtFile) {
     string buffer;
     int i{1};
 
+    std::cout << "File path: " << filename << "\n\n";
+
     std::cout << "Character count: " << charCount << '\n';
     while(getline(txtFile, buffer)) {
         std::cout << i++ << ": " << buffer;

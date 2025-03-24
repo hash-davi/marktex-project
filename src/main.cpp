@@ -22,14 +22,25 @@ int main() {
 }
 
 void mainScreen() {
-    fstream testFile;
-    static string filename{};
+    fstream existingFile;
+    string filename{};
+    static string filePath{};
     char choice{};
 
     if(filename.empty()) {
         std::cout << "Enter filename: ";
         std::cin >> filename;
-        filename = "..\\files\\" + filename;
+        filePath = "..\\files\\" + filename;
+
+        existingFile.open(filePath, std::ios_base::in);
+        if(existingFile.is_open()) {
+            existingFile.close();
+        }
+        else {
+            std::cout << "There is no such file. Please try again.\n";
+            filename.clear();
+            mainScreen();
+        }
     }
     else {
         std::cout << "Do you wish to open another file? Type [y] if so or [n] otherwise. ";
@@ -41,7 +52,7 @@ void mainScreen() {
             case 'y':
                 std::cout << "Enter filename: ";
                 std::cin >> filename;
-                filename = "..\\files\\" + filename;
+                filePath = "..\\files\\" + filename;
                 break;
             case 'n':
                 break;
@@ -61,7 +72,7 @@ void mainScreen() {
     switch(tolower(choice)) {
         case 'y':
             system("cls");
-            editor(filename, testFile);
+            editor(filePath, existingFile);
             break;
         case 'n':
             leaveProgram();

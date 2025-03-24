@@ -1,2 +1,2 @@
-bananamacamalamalamala mala mala malaasaklaksdna alguma coisa, varias coisas assinaturaa a a 
-testemais testes varios textos ola, mundo! tudo bem? como vai voce?
+#include <iostream>
+int main() { std::cout << "Hello, world!\n"; return 0; }
