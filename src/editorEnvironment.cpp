@@ -1,9 +1,14 @@
 #include "./headers/Marktex_main.h"
 
+#include <cstdio>
+
+using namespace std::literals;
+
 void editor(string filename, fstream &txtFile);
 void showText(string filename, fstream &txtFile);
 int getCharacterCount(string filename, fstream &txtFile);
 int getLineCount(string filename, fstream &txtFile);
+string getText(string filename, fstream &txtFile);
 
 /*
 int main(){
@@ -13,15 +18,51 @@ int main(){
 */
 
 void editor(string filename, fstream &txtFile) {
+    string tempFilename{"..\\files\\temp\\temporary.txt"};
+    fstream temporaryFile(tempFilename);
+    if(temporaryFile.is_open()) {
+        temporaryFile.close();
+    }
+
+    int caretPosition{getCharacterCount(filename, txtFile)};
+    string fileText{getText(filename, txtFile)};
     string textInput{};
 
     while(true) {
+        fileText = getText(filename, txtFile);
         showText(filename, txtFile);
         txtFile.open(filename, std::ios_base::app);
 
-        getline(std::cin, textInput);
-        txtFile << textInput;
+        //while(true) { // Awaits for user input
+            if(GetKeyState(VK_BACK) & 0x8000) {
+                if(fileText.empty() || caretPosition <= 0) {
+                    caretPosition = 0;
+                    //break;
+                }
+                else {
+                    fileText.erase(caretPosition - 1);
+                    --caretPosition;
+                    temporaryFile.open(tempFilename, std::ios_base::out);
+                    temporaryFile << fileText;
+                    temporaryFile.close();
+                    txtFile.close();
+                    remove("..\\files\\test.txt");
+                    rename("..\\files\\temp\\temporary.txt", "..\\files\\test.txt");
+                    //break;
+                }
+            }
+            else if(GetKeyState(VK_RETURN) & 0x8000) {
+                txtFile << '\n';
+                //break;
+            }
+            else {
+                getline(std::cin, textInput);
+                txtFile << textInput;
+                //break;
+            }
+        // }
 
+        fileText = "";
         txtFile.close();
         system("cls");
     }
@@ -78,4 +119,18 @@ int getLineCount(string filename, fstream &txtFile) {
     txtFile.close();
 
     return lineCounter;
+}
+
+string getText(string filename, fstream &txtFile) {
+    txtFile.open(filename, std::ios_base::in);
+    string text{};
+    string fileText{};
+
+    while(getline(txtFile, text)) {
+        fileText += text;
+    }
+
+    txtFile.close();
+
+    return fileText;
 }

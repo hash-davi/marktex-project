@@ -13,6 +13,8 @@
 #include <ios>
 #include <vector>
 #include <windows.h>
+#include <filesystem>
+#include <string_view>
 
 using std::string;
 using std::fstream;
