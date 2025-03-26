@@ -30,7 +30,7 @@ void mainScreen() {
     if(filename.empty()) {
         std::cout << "Enter filename: ";
         std::cin >> filename;
-        filePath = "..\\files\\" + filename;
+        filePath = R"(..\\files\\)" + filename;
 
         existingFile.open(filePath, std::ios_base::in);
         if(existingFile.is_open()) {

@@ -1,12 +1,13 @@
 #include "./headers/Marktex_main.h"
 
 #include <cstdio>
+#include <conio.h>
 
 using namespace std::literals;
 
 void editor(string filename, fstream &txtFile);
 void showText(string filename, fstream &txtFile);
-int getCharacterCount(string filename, fstream &txtFile);
+unsigned long long getCharacterCount(string filename, fstream &txtFile);
 int getLineCount(string filename, fstream &txtFile);
 string getText(string filename, fstream &txtFile);
 
@@ -18,26 +19,35 @@ int main(){
 */
 
 void editor(string filename, fstream &txtFile) {
-    string tempFilename{"..\\files\\temp\\temporary.txt"};
+    string tempFilename{R"(..\\files\\temp\\temporary.txt)"};
     fstream temporaryFile(tempFilename);
+    char keyInput{};
     if(temporaryFile.is_open()) {
         temporaryFile.close();
     }
 
-    int caretPosition{getCharacterCount(filename, txtFile)};
+    unsigned long long caretPosition{getCharacterCount(filename, txtFile)};
     string fileText{getText(filename, txtFile)};
     string textInput{};
 
     while(true) {
         fileText = getText(filename, txtFile);
+
+        // Debug
+        std::cout << "Caret: " << caretPosition << std::endl;
+        std::cout << "Characters: " << getCharacterCount(filename, txtFile) << std::endl;
+        // ------------------------------------------------------------------------------
+
         showText(filename, txtFile);
         txtFile.open(filename, std::ios_base::app);
 
-        //while(true) { // Awaits for user input
-            if(GetKeyState(VK_BACK) & 0x8000) {
+        //if(kbhit()) { // Awaits for user input
+            keyInput = getch();
+
+            if(GetKeyState(VK_BACK) < 0) {
                 if(fileText.empty() || caretPosition <= 0) {
                     caretPosition = 0;
-                    //break;
+                    //continue;
                 }
                 else {
                     fileText.erase(caretPosition - 1);
@@ -46,21 +56,21 @@ void editor(string filename, fstream &txtFile) {
                     temporaryFile << fileText;
                     temporaryFile.close();
                     txtFile.close();
-                    remove("..\\files\\test.txt");
-                    rename("..\\files\\temp\\temporary.txt", "..\\files\\test.txt");
+                    remove(R"(..\\files\\test.txt)");
+                    rename(R"(..\\files\\temp\\temporary.txt)", R"(..\\files\\test.txt)");
                     //break;
                 }
             }
-            else if(GetKeyState(VK_RETURN) & 0x8000) {
+            else if(keyInput == 13) {
                 txtFile << '\n';
                 //break;
             }
             else {
-                getline(std::cin, textInput);
-                txtFile << textInput;
+                txtFile << keyInput;
+                ++caretPosition;
                 //break;
             }
-        // }
+        //}
 
         fileText = "";
         txtFile.close();
@@ -69,7 +79,7 @@ void editor(string filename, fstream &txtFile) {
 }
 
 void showText(string filename, fstream &txtFile) {
-    int charCount{getCharacterCount(filename, txtFile)};
+    unsigned long long charCount{getCharacterCount(filename, txtFile)};
     int lineCount{getLineCount(filename, txtFile)};
 
     txtFile.open(filename, std::ios_base::in);
@@ -92,10 +102,10 @@ void showText(string filename, fstream &txtFile) {
     txtFile.close();
 }
 
-int getCharacterCount(string filename, fstream &txtFile) {
+unsigned long long getCharacterCount(string filename, fstream &txtFile) {
     txtFile.open(filename, std::ios_base::in);
     string characters;
-    int charCount{};
+    unsigned long long charCount{};
 
     while(getline(txtFile, characters)) {
         charCount += characters.length();
