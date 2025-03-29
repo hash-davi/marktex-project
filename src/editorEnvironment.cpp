@@ -7,41 +7,39 @@ using namespace std::literals;
 
 void editor(string filename, fstream &txtFile);
 void showText(string filename, fstream &txtFile);
-unsigned long long getCharacterCount(string filename, fstream &txtFile);
+uint64_t getCharacterCount(string filename, fstream &txtFile);
 int getLineCount(string filename, fstream &txtFile);
-string getText(string filename, fstream &txtFile);
-
-#define FILE_CONTENT_CLASS
+std::vector<string> getTextLines(string filename, fstream &txtFile);
 
 #ifdef FILE_CONTENT_CLASS
 class FileContent {
     private:
-        fstream file{};
+        fstream *file;
         string fileName{};
-        fstream tempFile{};
+        fstream *tempFile;
         std::vector<string> textLines;
         uint32_t caretX = 0;
         uint32_t caretY = 0;
         uint64_t characterCount{};
     public:
         FileContent(string _filename) {
-            this->file.open(_filename, std::ios_base::in);
-            this->tempFile.open(R"(..\\files\\temp\\temporary.txt)", std::ios_base::in);
-            if(this->file.is_open()) {
-                this->file.close();
+            this->file->open(_filename, std::ios_base::in);
+            this->tempFile->open(R"(..\\files\\temp\\temporary.txt)", std::ios_base::in);
+            if(this->file->is_open()) {
+                this->file->close();
             }
-            if(this->tempFile.is_open()) {
-                this->tempFile.close();
+            if(this->tempFile->is_open()) {
+                this->tempFile->close();
             }
         }
-        void openAppend() {
-            this->file.open(this->getFileName(), std::ios_base::app);
+        void openTempFileAppend() {
+            this->tempFile->open(R"(..\\files\\temp\\temporary.txt)", std::ios_base::app);
         }
-        void closeFile() {
-            this->file.close();
+        void closeTempFile() {
+            this->tempFile->close();
         }
-        fstream getFile() {
-            return this->file;
+        fstream *getTempFile() {
+            return this->tempFile;
         }
         void setFileName(string _filename) {
             this->fileName = _filename;
@@ -51,14 +49,14 @@ class FileContent {
         }
         void setTextLines() {
             string _lineText{};
-            this->file.open(this->getFileName(), std::ios_base::in);
+            this->file->open(this->getFileName(), std::ios_base::in);
 
             int i{};
-            while(getline(this->file, _lineText)) {
+            while(getline(*this->file, _lineText)) {
                 this->textLines[i++] = _lineText;
             }
 
-            this->file.close();
+            this->file->close();
         }
         std::vector<string> getTextLines() {
             if(this->textLines.empty()) {
@@ -108,10 +106,12 @@ void editFile(FileContent TxtFile) {
         TxtFile.showFileContent();
 
         if(keyInput == 13) {
-            TxtFile.getFile() << '\n';
+            TxtFile.getTempFile() << '\n';
         }
         else if(GetKeyState(VK_BACK) & 0x8000) {
-            if()
+            if(TxtFile.getCaretX() != 0) {
+                break;
+            }
         }
     }
 }
@@ -123,17 +123,18 @@ void editFile(FileContent TxtFile) {
 void editor(string filename, fstream &txtFile) {
     string tempFilename{R"(..\\files\\temp\\temporary.txt)"};
     fstream temporaryFile(tempFilename);
+    std::vector<string> textLines;
     char keyInput{};
     if(temporaryFile.is_open()) {
         temporaryFile.close();
     }
 
-    unsigned long long caretPosition{getCharacterCount(filename, txtFile)};
-    string fileText{getText(filename, txtFile)};
+    uint64_t caretPosition{getCharacterCount(filename, txtFile)};
+    std::vector<string> fileText{getTextLines(filename, txtFile)};
     string textInput{};
 
     while(true) {
-        fileText = getText(filename, txtFile);
+        fileText = getTextLines(filename, txtFile);
 
         // Debug
         std::cout << "Caret: " << caretPosition << std::endl;
@@ -181,7 +182,7 @@ void editor(string filename, fstream &txtFile) {
 }
 
 void showText(string filename, fstream &txtFile) {
-    unsigned long long charCount{getCharacterCount(filename, txtFile)};
+    uint64_t charCount{getCharacterCount(filename, txtFile)};
     int lineCount{getLineCount(filename, txtFile)};
 
     txtFile.open(filename, std::ios_base::in);
@@ -204,10 +205,10 @@ void showText(string filename, fstream &txtFile) {
     txtFile.close();
 }
 
-unsigned long long getCharCount(string filename, fstream &txtFile) {
+uint64_t getCharCount(string filename, fstream &txtFile) {
     txtFile.open(filename, std::ios_base::in);
     string characters;
-    unsigned long long charCount{};
+    uint64_t charCount{};
 
     while(getline(txtFile, characters)) {
         charCount += characters.length();
@@ -233,17 +234,19 @@ int getLineCount(string filename, fstream &txtFile) {
     return lineCounter;
 }
 
-string getText(string filename, fstream &txtFile) {
+std::vector<string> getTextLines(string filename, fstream &txtFile) {
     txtFile.open(filename, std::ios_base::in);
     string text{};
     string fileText{};
+    std::vector<string> textLines;
 
+    int i{};
     while(getline(txtFile, text)) {
-        fileText += text;
+        textLines[i++] += text;
     }
 
     txtFile.close();
 
-    return fileText;
+    return textLines;
 }
 #endif
