@@ -1,5 +1,7 @@
 #include "./headers/Marktex_main.h"
 
+#define FILE_CONTENT_CLASS
+
 #include "editorEnvironment.cpp"
 
 void mainScreen();
