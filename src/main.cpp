@@ -1,7 +1,5 @@
 #include "./headers/Marktex_main.h"
 
-#define FILE_CONTENT_CLASS
-
 #include "editorEnvironment.cpp"
 
 void mainScreen();
@@ -29,9 +27,10 @@ void mainScreen() {
     static string filePath{};
     char choice{};
 
+
     if(filename.empty()) {
         std::cout << "Enter filename: ";
-        std::cin >> filename;
+        getline(std::cin, filename);
         filePath = R"(..\\files\\)" + filename;
 
         existingFile.open(filePath, std::ios_base::in);
@@ -54,7 +53,7 @@ void mainScreen() {
             case 'y':
                 std::cout << "Enter filename: ";
                 std::cin >> filename;
-                filePath = "..\\files\\" + filename;
+                filePath = R"(..\\files\\)" + filename;
                 break;
             case 'n':
                 break;
@@ -65,6 +64,7 @@ void mainScreen() {
                 mainScreen();
         }
     }
+
 
     std::cout << "Type [y] if you wish to edit the file or [n] if you want to leave: ";
     std::cin >> choice;
