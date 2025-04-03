@@ -10,6 +10,7 @@ void showText(string filename, fstream &txtFile);
 uint64_t getCharCount(string filename, fstream &txtFile);
 uint64_t getLineCount(string filename, fstream &txtFile);
 std::vector<string> getTextLines(string filename, fstream &txtFile);
+void fillTemporaryFile(string temporaryFileName, string filename, fstream &tempTxtFile);
 
 typedef struct {
     uint64_t x{};
@@ -77,7 +78,6 @@ void editor(string filename, fstream &txtFile) {
         }
         else if(keyInput == 13) {
             txtFile << '\n';
-            txtFile << ' ';
             ++caretPosition.y;
             caretPosition.x = 0;
             fileText.resize(fileText.size() + 1);
@@ -170,4 +170,19 @@ std::vector<string> getTextLines(string filename, fstream &txtFile) {
     else {
         exit(-1);
     }
+}
+
+void fillTemporaryFile(string temporaryFileName, string filename, fstream &tempTxtFile) {
+    fstream txtFile(filename);
+    tempTxtFile.open(temporaryFileName, std::ios_base::out);
+    txtFile.open(filename, std::ios_base::in);
+
+    string fileText{};
+
+    while(getline(txtFile, fileText)) {
+        tempTxtFile << fileText;
+    }
+
+    tempTxtFile.close();
+    txtFile.close();
 }
