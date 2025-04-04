@@ -37,6 +37,7 @@ void editor(string filename, fstream &txtFile) {
         std::cout << "Line: " << caretPosition.y << std::endl;
         std::cout << "Column: " << caretPosition.x << std::endl;
         std::cout << "Current line: " << currentLine << std::endl;
+        std::cout << "Current line length: " << currentLine.length() << std::endl;
         std::cout << "Characters: " << getCharCount(filename, txtFile) << std::endl;
         // ------------------------------------------------------------------------------
 
@@ -78,6 +79,7 @@ void editor(string filename, fstream &txtFile) {
         }
         else if(keyInput == 13) {
             txtFile << '\n';
+            txtFile << '\0';
             ++caretPosition.y;
             caretPosition.x = 0;
             fileText.resize(fileText.size() + 1);
@@ -86,6 +88,9 @@ void editor(string filename, fstream &txtFile) {
         }
         else {
             currentLine = fileText.at(caretPosition.y - 1);
+            if(currentLine.compare("\0") == 0) {
+                currentLine.clear();
+            }
             currentLine += keyInput;
             txtFile << keyInput;
             ++caretPosition.x;
