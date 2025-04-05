@@ -29,14 +29,18 @@ void editor(string filename, fstream &txtFile) {
     string currentLine{fileText.back()};
     caretStructure caretPosition = {.x = currentLine.length(), .y = fileText.size()};
     string textInput{};
+    int64_t lastFileTextPosition{txtFile.tellg()};
 
     while(true) {
         fileText = getTextLines(filename, txtFile);
+        lastFileTextPosition = txtFile.tellg();
 
         // Debug
         std::cout << "Line: " << caretPosition.y << std::endl;
         std::cout << "Column: " << caretPosition.x << std::endl;
         std::cout << "Current line: " << currentLine << std::endl;
+        //std::cout << "Possible current line: " << fileText.at(caretPosition.y - 1) << std::endl;
+        std::cout << "File position: " << lastFileTextPosition << std::endl;
         std::cout << "Current line length: " << currentLine.length() << std::endl;
         std::cout << "Characters: " << getCharCount(filename, txtFile) << std::endl;
         // ------------------------------------------------------------------------------
@@ -59,6 +63,7 @@ void editor(string filename, fstream &txtFile) {
                     fileText.at(caretPosition.y - 1) = currentLine;
                 }
                 else {
+                    fileText.erase(fileText.begin() + caretPosition.y - 1);
                     --caretPosition.y;
                     currentLine.clear();
                     currentLine = fileText.at(caretPosition.y - 1);
@@ -79,17 +84,19 @@ void editor(string filename, fstream &txtFile) {
         }
         else if(keyInput == 13) {
             txtFile << '\n';
-            txtFile << '\0';
+            txtFile << R"(\)";
             ++caretPosition.y;
-            caretPosition.x = 0;
             fileText.resize(fileText.size() + 1);
+            fileText.insert(fileText.begin() + caretPosition.y - 1, R"(\)");
             currentLine.clear();
             currentLine = fileText.at(caretPosition.y - 1);
+            caretPosition.x = currentLine.length();
         }
         else {
             currentLine = fileText.at(caretPosition.y - 1);
-            if(currentLine.compare("\0") == 0) {
+            if(currentLine.compare(R"(\)") == 0) {
                 currentLine.clear();
+                fileText.insert(fileText.begin() + caretPosition.y - 1, currentLine);
             }
             currentLine += keyInput;
             txtFile << keyInput;
