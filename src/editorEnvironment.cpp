@@ -3,8 +3,6 @@
 #include <cstdio>
 #include <conio.h>
 
-using namespace std::literals;
-
 void editor(string filename, fstream &txtFile);
 void showText(string filename, fstream &txtFile);
 uint64_t getCharCount(string filename, fstream &txtFile);
@@ -39,7 +37,7 @@ void editor(string filename, fstream &txtFile) {
         std::cout << "Line: " << caretPosition.y << std::endl;
         std::cout << "Column: " << caretPosition.x << std::endl;
         std::cout << "Current line: " << currentLine << std::endl;
-        //std::cout << "Possible current line: " << fileText.at(caretPosition.y - 1) << std::endl;
+        std::cout << "Last line index: " << fileText.size() - 1 << std::endl;
         std::cout << "File position: " << lastFileTextPosition << std::endl;
         std::cout << "Current line length: " << currentLine.length() << std::endl;
         std::cout << "Characters: " << getCharCount(filename, txtFile) << std::endl;
@@ -60,7 +58,12 @@ void editor(string filename, fstream &txtFile) {
                 if(caretPosition.x > 0) {
                     currentLine.erase(currentLine.begin() + caretPosition.x - 1);
                     --caretPosition.x;
-                    fileText.at(caretPosition.y - 1) = currentLine;
+                    if(currentLine.empty()) {
+                        fileText.at(caretPosition.y - 1) = " ";
+                    }
+                    else {
+                        fileText.at(caretPosition.y - 1) = currentLine;
+                    }
                 }
                 else {
                     fileText.erase(fileText.begin() + caretPosition.y - 1);
